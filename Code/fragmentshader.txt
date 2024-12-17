@@ -1,0 +1,23 @@
+varying vec3 N;
+varying vec3 L;
+uniform sampler2D texMap;
+uniform bool useTexture;
+out vec4 myOutputColor;
+
+void main() {
+    vec3 Normal = normalize(N);
+    vec3 Light  = normalize(L);
+
+    // Calculate diffuse lighting
+    float Kd = max(dot(Normal, Light), 0.0);
+    vec4 diffuse = 3.0 * Kd * gl_FrontMaterial.diffuse; // Brighten the diffuse component
+
+    // Add a base ambient light to ensure minimum brightness
+    vec4 ambient = 0.8 * gl_FrontMaterial.ambient; // Brighten the ambient component
+
+    // Apply texture or fallback to white
+    vec4 texColor = useTexture ? texture2D(texMap, gl_TexCoord[0].st) : vec4(1.0);
+
+    // Final color
+    myOutputColor = (ambient + diffuse) * texColor;
+}
